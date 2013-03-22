@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Google Map API v3 Drive distance.</title>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=[YOUR_API_KEY]&sensor=false"> </script>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+</head>
+<body>
+    <h2>Distance betwin two addresses</h2>
+    
+    <div id="map_canvas" style="width: 400px;height: 400px;"></div>
+
+    <p>
+        From:
+        <input type="text" name="address1" value="7340 Hollister Ave, Goleta, CA 93117, USA" style="width: 400px"/>
+    </p>
+    <p>
+        To:
+        <input type="text" name="address2" value="4 New York Plaza, New York, NY 10004, USA" style="width: 400px"/>
+    </p>
+    <p id="distance">
+        
+    </p>
+    <script type="text/javascript">
+        $(function () {
+
+            var getLocation = function (address, callback) {
+                var geocoder = new google.maps.Geocoder();
+
+                geocoder.geocode({
+                    'address': address
+                }, $.proxy(function (resp) {
+
+                    if (!resp.length) {
+                        return;
+                    }
+                    callback.call(this, resp[0].geometry.location);
+                }, this));
+            };
+
+            var getDistance = function () {
+                console.log('1');
+                getLocation($('[name="address1"]').val(), function (location1) {
+                    getLocation($('[name="address2"]').val(), function (location2) {
+
+                        if (!location1 || !location2) {
+                            return;
+                        }
+
+                        var dir = new google.maps.DistanceMatrixService();
+                        dir.getDistanceMatrix({
+                            origins: [location1],
+                            destinations: [location2],
+                            travelMode: 'DRIVING',
+                            unitSystem: '1'
+                        }, $.proxy(function (res, status) {
+                            var value = res.rows[0].elements[0].distance.text;
+                            if (!value) {
+                                return;
+                            }
+                            $('#distance').text('Distance is: ' + value);
+                        }, this));
+
+                    });
+                });
+            };
+
+            var map = new google.maps.Map($('#map_canvas')[0], {
+                center: new google.maps.LatLng(40.7027379, -74.0110843),
+                zoom: 2,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+
+            $('[name="address1"], [name="address2"]').change(getDistance);
+
+            $('[name="address1"], [name="address2"]').trigger('change');
+        })
+    </script>
+</body>
+</html>

@@ -6,7 +6,7 @@
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 </head>
 <body>
-    <h2>Distance betwin two addresses</h2>
+    <h2>Distance between two addresses</h2>
     
     <div id="map_canvas" style="width: 400px;height: 400px;"></div>
 
@@ -39,7 +39,6 @@
             };
 
             var getDistance = function () {
-                console.log('1');
                 getLocation($('[name="address1"]').val(), function (location1) {
                     getLocation($('[name="address2"]').val(), function (location2) {
 
@@ -51,8 +50,8 @@
                         dir.getDistanceMatrix({
                             origins: [location1],
                             destinations: [location2],
-                            travelMode: 'DRIVING',
-                            unitSystem: '1'
+                            travelMode: google.maps.TravelMode.DRIVING,
+                            unitSystem: google.maps.UnitSystem.IMPERIAL
                         }, $.proxy(function (res, status) {
                             var value = res.rows[0].elements[0].distance.text;
                             if (!value) {
